@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace DeliveryService.src.Models.CommandLine;
+namespace DeliveryService.Models.CommandLine;
 public class Arguments
 {
     [Option('o', "orderId", HelpText = "Иденификатор заказа")]
