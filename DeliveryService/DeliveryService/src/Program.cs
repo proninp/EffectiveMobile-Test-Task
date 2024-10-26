@@ -1,5 +1,9 @@
 ﻿using DeliveryService.Options;
 using DeliveryService.Services;
+using DeliveryService.Services.Abstractions;
+using DeliveryService.src.Data;
+using DeliveryService.src.Services;
+using DeliveryService.src.Services.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -22,7 +26,10 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
     {
         services.Configure<AppSettings>(context.Configuration.GetSection(nameof(AppSettings)))
-                .AddSingleton<AppService>();
+            .AddDbContext<AppDbContext>()
+            .AddSingleton<AppService>()
+            .AddTransient<IArgumentsValidator, ArgumentsValidator>()
+            .AddTransient<IOrderHandler, OrderHandler>();
     })
     .Build();
 

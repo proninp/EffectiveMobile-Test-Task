@@ -1,6 +1,9 @@
-﻿namespace DeliveryService.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DeliveryService.Models;
 public class Order
 {
+    [Key]
     public Guid Id { get; set; }
 
     public long OrderId { get; set; }
