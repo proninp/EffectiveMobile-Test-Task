@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 using DeliveryService.Models.CommandLine;
-using DeliveryService.src.Services.Abstractions;
+using DeliveryService.Services.Abstractions;
 using Serilog;
 
 namespace DeliveryService.Services;
@@ -8,14 +8,24 @@ public sealed class AppService
 {
     private readonly ILogger _logger;
     private readonly IArgumentsValidator _argumentsValidator;
+    private readonly IArgumentParser _argumentsParser;
+    private readonly IOrderFilterProvider _orderHandler;
+    private readonly IOrderInformer _orderInformer;
 
-    public AppService(ILogger logger, IArgumentsValidator argumentsValidator)
+    public AppService(ILogger logger,
+        IArgumentsValidator argumentsValidator,
+        IArgumentParser argumentsParser,
+        IOrderFilterProvider orderHandler,
+        IOrderInformer orderInformer)
     {
         _logger = logger;
         _argumentsValidator = argumentsValidator;
+        _argumentsParser = argumentsParser;
+        _orderHandler = orderHandler;
+        _orderInformer = orderInformer;
     }
 
-    public void Run(string[] args)
+    public async Task RunAsync(string[] args)
     {
         try
         {
@@ -32,7 +42,11 @@ public sealed class AppService
                 .WithNotParsed(_argumentsValidator.HandleErrors)
                 .Value;
 
+            var filter = _argumentsParser.ParseArgumentsToFilter(arguments);
 
+            var orders = await _orderHandler.GetFilteredOrdersAsync(filter);
+
+            _orderInformer.ShowInfo(orders);
         }
         catch (Exception ex)
         {

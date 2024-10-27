@@ -1,12 +1,16 @@
 ﻿using DeliveryService.Models.CommandLine;
-using DeliveryService.src.Models;
-using DeliveryService.src.Services.Abstractions;
+using DeliveryService.Models;
+using DeliveryService.Services.Abstractions;
 
-namespace DeliveryService.src.Services;
+namespace DeliveryService.Services;
 public sealed class ArgumentParser : IArgumentParser
 {
     public OrderFilter ParseArgumentsToFilter(Arguments args)
     {
-        
+        return new OrderFilter
+        {
+            DistrictId = args.DistrictId,
+            DeliveryTime = args.DeliveryTime,
+        };
     }
 }

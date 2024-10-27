@@ -1,26 +1,24 @@
 ﻿using DeliveryService.Models;
 using DeliveryService.Options;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Configuration;
 
-namespace DeliveryService.src.Data;
+namespace DeliveryService.Data;
 public class AppDbContext : DbContext
 {
-    private readonly AppSettings _options;
+    protected readonly IConfiguration Configuration;
 
-    public AppDbContext(IOptions<AppSettings> options)
+    public AppDbContext(IConfiguration configuration)
     {
-        _options = options.Value;
+        Configuration = configuration;
     }
 
     public DbSet<Order> Orders { get; set; }
+    public DbSet<District> Districts { get; set; }
+    public DbSet<Delivery> Deliveries { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseNpgsql(_options.DbConnectionString);
-        }
+        optionsBuilder.UseNpgsql(Configuration["DbOptions:ConnectionString"]);
     }
-
 }

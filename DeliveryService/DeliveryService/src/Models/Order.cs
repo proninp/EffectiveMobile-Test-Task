@@ -1,16 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace DeliveryService.Models;
-public class Order
+public sealed class Order
 {
     [Key]
-    public Guid Id { get; set; }
-
-    public long OrderId { get; set; }
+    public long Id { get; set; }
 
     public double Weight { get; set; }
 
     public long DistrictId { get; set; }
 
     public DateTime DeliveryTime { get; set; }
+
+    public override string? ToString()
+    {
+        return $"{nameof(Id)}: {Id}; {nameof(Weight)}: {Weight}; {nameof(DistrictId)}: {DistrictId}; {nameof(DeliveryTime)}: {DeliveryTime}";
+    }
 }

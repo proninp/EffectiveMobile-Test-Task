@@ -1,7 +1,7 @@
 ﻿using DeliveryService.Models.CommandLine;
-using DeliveryService.src.Models;
+using DeliveryService.Models;
 
-namespace DeliveryService.src.Services.Abstractions;
+namespace DeliveryService.Services.Abstractions;
 public interface IArgumentParser
 {
     OrderFilter ParseArgumentsToFilter(Arguments args);
