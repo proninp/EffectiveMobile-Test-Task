@@ -11,7 +11,6 @@ public static class AppConfiguration
         var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Development";
         return new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(Path.Combine("Configuration", "appsettings.json"), optional: true, reloadOnChange: true)
             .AddJsonFile(Path.Combine("Configuration", $"appsettings.{environment}.json"), optional: true, reloadOnChange: true)
             .Build();
     }
