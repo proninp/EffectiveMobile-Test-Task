@@ -1,37 +1,26 @@
 ﻿using DeliveryService.Services;
 using DeliveryService.Services.Abstractions;
-using DeliveryService.Data;
-using DeliveryService.Options;
-using Microsoft.Extensions.Configuration;
+using DeliveryService.src.Services;
+using DeliveryService.src.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 
-var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? "Production";
-
-var configuration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile(Path.Combine("Configuration", "appsettings.json"), optional: true, reloadOnChange: true)
-    .AddJsonFile(Path.Combine("Configuration", $"appsettings.{environment}.json"), optional: true, reloadOnChange: true)
-    .Build();
+var configuration = AppConfiguration.BuildConfiguration();
 
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(configuration)
     .CreateLogger();
 
-var serviceCollection = new ServiceCollection();
-serviceCollection.Configure<DbOptions>(configuration.GetSection(nameof(DbOptions)));
-
-serviceCollection.AddDbContext<AppDbContext>();
-
-serviceCollection
-    .AddSingleton<IConfiguration>(configuration)
+var serviceCollection = new ServiceCollection()
+    .AddDbOptions(configuration)
+    .AddSingleton(Log.Logger)
     .AddSingleton<AppService>()
     .AddTransient<IArgumentsValidator, ArgumentsValidator>()
     .AddTransient<IArgumentParser, ArgumentParser>()
-    .AddTransient<IOrderFilterProvider, DeliveryHandler>();
+    .AddTransient<IOrderFilterProvider, DeliveryHandler>()
+    .AddTransient<IOrderInformer, ConsoleInformer>();
+
 
 var serviceProvider = serviceCollection.BuildServiceProvider();
 
