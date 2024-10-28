@@ -1,4 +1,5 @@
-﻿INSERT INTO Districts (Id,Name)
+﻿-- наполнение данных
+INSERT INTO Districts (Id,Name)
 VALUES
 	(1,'Tasmania'),
 	(2,'Colorado'),
