@@ -1,8 +1,7 @@
-﻿using DeliveryService.Data;
-using DeliveryService.src.Util;
+﻿using DeliveryService.Util;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace DeliveryService.src.Data;
+namespace DeliveryService.Data;
 public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)

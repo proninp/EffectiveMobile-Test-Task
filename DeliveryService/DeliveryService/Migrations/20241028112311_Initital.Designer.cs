@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DeliveryService.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241028072930_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241028112311_Initital")]
+    partial class Initital
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,12 +37,16 @@ namespace DeliveryService.Migrations
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("LastDeliveryFilterTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DistrictId");
+
+                    b.HasIndex("OrderId");
 
                     b.ToTable("Deliveries");
                 });
@@ -73,7 +77,7 @@ namespace DeliveryService.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<DateTime>("DeliveryTime")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<long>("DistrictId")
                         .HasColumnType("bigint");
@@ -83,7 +87,46 @@ namespace DeliveryService.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DistrictId");
+
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Delivery", b =>
+                {
+                    b.HasOne("DeliveryService.Models.District", "District")
+                        .WithMany("Deliveries")
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DeliveryService.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("District");
+
+                    b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.Order", b =>
+                {
+                    b.HasOne("DeliveryService.Models.District", "District")
+                        .WithMany("Orders")
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("District");
+                });
+
+            modelBuilder.Entity("DeliveryService.Models.District", b =>
+                {
+                    b.Navigation("Deliveries");
+
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DeliveryService": {
+      "commandName": "Project",
+      "commandLineArgs": "--deliveryTime \"2024-10-28 12:05:00\""
+    }
+  }
+}

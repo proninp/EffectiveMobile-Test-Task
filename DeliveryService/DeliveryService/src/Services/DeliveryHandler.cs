@@ -1,71 +1,33 @@
 ﻿using DeliveryService.Models;
 using DeliveryService.Services.Abstractions;
-using DeliveryService.Data;
+using DeliveryService.src.Services.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace DeliveryService.Services;
 public sealed class DeliveryHandler : IOrderFilterProvider
 {
-    private readonly AppDbContext _context;
+    private readonly IOrderDeliveryRepository _orderDeliveryRepository;
 
-    public DeliveryHandler(AppDbContext context)
+    public DeliveryHandler(IOrderDeliveryRepository deliveryRepository)
     {
-        _context = context;
+        _orderDeliveryRepository = deliveryRepository;
     }
 
-    public async Task<Order[]> GetFilteredOrdersAsync(OrderFilter orderFilter)
+    public async Task<List<Order>> GetFilteredOrdersAsync(OrderFilter orderFilter)
     {
-        var query = _context.Orders.AsQueryable();
+        var orders = await _orderDeliveryRepository.Get(orderFilter);
 
-        if (orderFilter.DistrictId.HasValue)
-        {
-            query = query.Where(o => o.DistrictId == orderFilter.DistrictId.Value);
-        }
-
-        if (orderFilter.DeliveryTime.HasValue)
-        {
-            query = query.Where(o => o.DeliveryTime >= orderFilter.DeliveryTime.Value);
-        }
-        
-        var earliestOrder = await query.OrderBy(o => o.DeliveryTime).FirstOrDefaultAsync();
+        var earliestOrder = orders.OrderBy(o => o.DeliveryTime).FirstOrDefault();
 
         if (earliestOrder is null)
         {
-            return new Order[0];
+            return new List<Order>();
         }
 
-        query = query.Where(o => o.DeliveryTime <= earliestOrder.DeliveryTime.AddMinutes(30));
-        var orders = await query.AsNoTracking().ToArrayAsync();
+        orders = orders.Where(o => o.DeliveryTime <= earliestOrder.DeliveryTime.AddMinutes(30)).ToList();
 
-        await LogDeliveriesAsync(orders);
-        
+        _ = await _orderDeliveryRepository.SaveAsync(orders);
+
         return orders;
-    }
-
-    private async Task LogDeliveriesAsync(IEnumerable<Order> orders)
-    {
-        await Task.WhenAll(orders.Select(o => LogDeliveryAsync(o.Id, o.DistrictId)));
-        await _context.SaveChangesAsync();
-    }
-
-    private async Task LogDeliveryAsync(long orderId, long districtId)
-    {
-        var delivery = await _context.Deliveries
-            .FirstOrDefaultAsync(d => d.OrderId == orderId && d.DistrictId == districtId);
-
-        if (delivery is not null)
-        {
-            delivery.LastDeliveryFilterTime = DateTime.UtcNow;
-        }
-        else
-        {
-            delivery = new Delivery
-            {
-                OrderId = orderId,
-                DistrictId = districtId,
-                LastDeliveryFilterTime = DateTime.UtcNow
-            };
-            _context.Deliveries.Add(delivery);
-        }
     }
 }

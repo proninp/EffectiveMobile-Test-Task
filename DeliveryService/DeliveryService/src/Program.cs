@@ -1,7 +1,8 @@
 ﻿using DeliveryService.Services;
 using DeliveryService.Services.Abstractions;
 using DeliveryService.src.Services;
-using DeliveryService.src.Util;
+using DeliveryService.src.Services.Abstractions;
+using DeliveryService.Util;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
@@ -19,6 +20,7 @@ var serviceCollection = new ServiceCollection()
     .AddTransient<IArgumentsValidator, ArgumentsValidator>()
     .AddTransient<IArgumentParser, ArgumentParser>()
     .AddTransient<IOrderFilterProvider, DeliveryHandler>()
+    .AddTransient<IOrderDeliveryRepository, OrderDeliveryRepository>()
     .AddTransient<IOrderInformer, ConsoleInformer>();
 
 

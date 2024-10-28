@@ -50,8 +50,7 @@ public sealed class AppService
         }
         catch (Exception ex)
         {
-            var message = "Приложение завершилось с ошибкой";
-            _logger.Fatal(ex, $"{message}:{Environment.NewLine}{ex}");
+            _logger.Fatal(ex, $"Приложение завершилось с ошибкой:{Environment.NewLine}{ex.Message}");
         }
         finally
         {

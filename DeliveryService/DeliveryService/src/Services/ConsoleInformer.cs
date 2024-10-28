@@ -2,7 +2,7 @@
 using DeliveryService.Services.Abstractions;
 using System.Text;
 
-namespace DeliveryService.src.Services;
+namespace DeliveryService.Services;
 public sealed class ConsoleInformer : IOrderInformer
 {
     public void ShowInfo(IEnumerable<Order> orders)
