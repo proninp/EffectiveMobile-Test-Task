@@ -1,6 +1,7 @@
 ﻿using DeliveryService.Models;
 using DeliveryService.Services;
 using DeliveryService.src.Services.Abstractions;
+using FluentAssertions;
 using Moq;
 
 namespace DeliveryService.Tests;
@@ -33,7 +34,7 @@ public class DeliveryHandlerTests
         var result = await _deliveryHandler.GetFilteredOrdersAsync(orderFilter);
 
         // Assert
-        Assert.Empty(result);
+        result.Should().BeEmpty();
     }
 
     [Theory]

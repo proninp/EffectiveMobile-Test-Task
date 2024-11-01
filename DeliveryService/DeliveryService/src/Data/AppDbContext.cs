@@ -1,5 +1,6 @@
 ﻿using DeliveryService.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace DeliveryService.Data;
 public class AppDbContext : DbContext
@@ -17,12 +18,6 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Order>()
-            .Property(o => o.DeliveryTime)
-            .HasColumnType("timestamp without time zone");
-
-        modelBuilder.Entity<Delivery>()
-            .Property(d => d.LastDeliveryFilterTime)
-            .HasColumnType("timestamp without time zone");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 }
